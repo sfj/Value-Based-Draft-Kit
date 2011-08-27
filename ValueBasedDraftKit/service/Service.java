@@ -94,7 +94,7 @@ public class Service {
 			return null;
 	}
 
-	private Player findPlayer(String name, String team) {
+	public Player findPlayer(String name, String team) {
 		boolean found = false;
 		int i = 0;
 		Player p = null;

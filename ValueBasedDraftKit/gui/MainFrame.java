@@ -2,9 +2,13 @@ package gui;
 
 import java.awt.BorderLayout;
 
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultRowSorter;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.RowFilter;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.TableModel;
 import javax.swing.JScrollPane;
 import java.awt.FlowLayout;
 import javax.swing.JButton;
@@ -13,6 +17,7 @@ import javax.swing.JComboBox;
 import service.Service;
 
 import model.Player;
+import model.PosEnum;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -29,13 +34,16 @@ public class MainFrame extends JFrame {
 	private JLabel lblWithProjection;
 	private JTable table;
 	private FantasyModel model;
+	private JComboBox filterPosComboBox;
+	private JLabel lblFilterTo;
+	private JLabel lblFilterOut;
 
 	/**
 	 * Create the frame.
 	 */
 	public MainFrame() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 667, 494);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -44,6 +52,22 @@ public class MainFrame extends JFrame {
 		model = new FantasyModel();
 		table = new JTable(model);
 		table.setAutoCreateRowSorter(true);
+		DefaultRowSorter<TableModel, String> rowsorter = (DefaultRowSorter<TableModel, String>) table.getRowSorter();
+		rowsorter.setRowFilter(new RowFilter<TableModel, String>() {
+
+			@Override
+			public boolean include(
+					javax.swing.RowFilter.Entry<? extends TableModel, ? extends String> entry) {
+				boolean include = false;
+				for (int i = entry.getValueCount() - 1; i >= 0; i--) {
+					String entryString = entry.getStringValue(i);
+					if(filterPosComboBox.getSelectedItem().toString().equals("All") || entryString.equals((filterPosComboBox.getSelectedItem().toString()))){
+						include = true;
+					}
+				}
+				return include;
+			}
+		});
 		JScrollPane scrollPane = new JScrollPane(table);
 		table.setFillsViewportHeight(true);
 		contentPane.add(scrollPane, BorderLayout.CENTER);
@@ -64,8 +88,21 @@ public class MainFrame extends JFrame {
 		btnRefresh.addActionListener(new BtnRefreshActionListener());
 		panel.add(btnRefresh);
 		
-		JComboBox comboBox = new JComboBox();
-		panel.add(comboBox);
+		filterPosComboBox = new JComboBox();
+		filterPosComboBox.addActionListener(new ComboBoxActionListener());
+		String[] values = new String[PosEnum.values().length + 1];
+		values[0] = "All";
+		for(int i = 1; i < PosEnum.values().length; i++) {
+			values[i] = PosEnum.values()[i - 1].toString();
+		}
+		
+		lblFilterTo = new JLabel("Filter to:");
+		panel.add(lblFilterTo);
+		filterPosComboBox.setModel(new DefaultComboBoxModel(values));
+		panel.add(filterPosComboBox);
+		
+		lblFilterOut = new JLabel("Filter out:");
+		panel.add(lblFilterOut);
 		
 		JComboBox comboBox_1 = new JComboBox();
 		panel.add(comboBox_1);
@@ -114,6 +151,11 @@ public class MainFrame extends JFrame {
 				}
 			}
 			lblWithProjection.setText(" with Proj: " + count);
+		}
+	}
+	private class ComboBoxActionListener implements ActionListener {
+		public void actionPerformed(ActionEvent arg0) {
+			model.update();
 		}
 	}
 }

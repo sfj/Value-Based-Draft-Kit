@@ -3,6 +3,7 @@ package model;
 public class Player {
 	private String name;
 	private double projection;
+	private boolean taken;
 	private Position position;
 	private NflTeam team;
 	private double adp;
@@ -19,6 +20,7 @@ public class Player {
 		this.setTeam(t);
 		this.setProjection(-1);
 		this.setAdp(-1);
+		this.setTaken(false);
 	}
 
 	public void setName(String name) {
@@ -84,5 +86,13 @@ public class Player {
 			tabs = "\t\t";
 		}
 		return "["+ position +"]\t" + name + tabs + team + "\t" + adp + "\t" + projection;
+	}
+
+	public boolean isTaken() {
+		return taken;
+	}
+	
+	public void setTaken(boolean taken) {
+		this.taken = taken;
 	}
 }

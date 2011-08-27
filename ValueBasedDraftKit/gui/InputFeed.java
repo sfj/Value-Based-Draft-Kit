@@ -82,7 +82,8 @@ public class InputFeed extends JFrame {
 							}
 						}
 						Service.getInstance().addPlayer(name, team, pos, adp, proj);
-					}					
+					}
+				dispose();
 			} catch (PatternSyntaxException ex) {
 				// Syntax error in the regular expression
 			} catch (NumberFormatException ex) {
