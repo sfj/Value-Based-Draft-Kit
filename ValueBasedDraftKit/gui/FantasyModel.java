@@ -10,11 +10,11 @@ import model.Player;
 
 public class FantasyModel extends AbstractTableModel {
 	private List<Player> players = Service.getInstance().getPlayers();
-	private String[] colnames = new String[]{"Name", "Position", "Team", "Projection", "ADP", "VBP", "Taken"};
+	private String[] colnames = new String[]{"Name", "Position", "Team", "Projection", "ADP", "VBP", "Taken", "Round"};
 
 	@Override
 	public int getColumnCount() {
-		return 7;
+		return 8;
 	}
 
 	@Override
@@ -40,6 +40,8 @@ public class FantasyModel extends AbstractTableModel {
 			r = p.getProjection()-p.getPosition().getVbline();
 		} else if (col == 6) {
 			r = p.isTaken();
+		} else if (col == 7) {
+			r = p.getProjRound();
 		}
 		return r;
 	}
@@ -48,6 +50,8 @@ public class FantasyModel extends AbstractTableModel {
 	public void setValueAt(Object aValue, int row, int col) {
 		if(col == 6) {
 			Service.getInstance().findPlayer(getValueAt(row, 0).toString(), getValueAt(row, 2).toString()).setTaken((Boolean) aValue);
+		} else if(col == 7) {
+			Service.getInstance().findPlayer(getValueAt(row, 0).toString(), getValueAt(row, 2).toString()).setProjRound((Integer)aValue);
 		}
 	}
 	
@@ -73,6 +77,8 @@ public class FantasyModel extends AbstractTableModel {
 			c = Double.class;
 		} else if (col == 6) {
 			c = Boolean.class;
+		} else if (col == 7) {
+			c = Integer.class;
 		}
 		return c;		
 	}
@@ -81,6 +87,8 @@ public class FantasyModel extends AbstractTableModel {
 	public boolean isCellEditable(int row, int col) {
 		boolean edit = false;
 		if(col == 6) {
+			edit = true;
+		} else if ( col == 7) {
 			edit = true;
 		}
 		return edit;

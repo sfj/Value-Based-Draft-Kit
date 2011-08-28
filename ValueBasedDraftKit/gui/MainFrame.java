@@ -16,6 +16,7 @@ import javax.swing.JComboBox;
 
 import service.Service;
 
+import model.FantasyLeague;
 import model.Player;
 import model.PosEnum;
 
@@ -37,6 +38,7 @@ public class MainFrame extends JFrame {
 	private JComboBox filterPosComboBox;
 	private JLabel lblFilterTo;
 	private JLabel lblFilterOut;
+	private JButton btnLockRounds;
 
 	/**
 	 * Create the frame.
@@ -78,6 +80,10 @@ public class MainFrame extends JFrame {
 		
 		JButton btnInputProjections = new JButton("Input - Projections");
 		btnInputProjections.addActionListener(new BtnInputProjectionsActionListener());
+		
+		btnLockRounds = new JButton("Lock rounds");
+		btnLockRounds.addActionListener(new BtnLockRoundsActionListener());
+		panel.add(btnLockRounds);
 		panel.add(btnInputProjections);
 		
 		JButton btnInputAdp = new JButton("Input - ADP");
@@ -88,16 +94,17 @@ public class MainFrame extends JFrame {
 		btnRefresh.addActionListener(new BtnRefreshActionListener());
 		panel.add(btnRefresh);
 		
+		lblFilterTo = new JLabel("Filter to:");
+		panel.add(lblFilterTo);
+		
 		filterPosComboBox = new JComboBox();
 		filterPosComboBox.addActionListener(new ComboBoxActionListener());
 		String[] values = new String[PosEnum.values().length + 1];
 		values[0] = "All";
 		for(int i = 1; i < PosEnum.values().length; i++) {
 			values[i] = PosEnum.values()[i - 1].toString();
-		}
+		}		
 		
-		lblFilterTo = new JLabel("Filter to:");
-		panel.add(lblFilterTo);
 		filterPosComboBox.setModel(new DefaultComboBoxModel(values));
 		panel.add(filterPosComboBox);
 		
@@ -134,28 +141,40 @@ public class MainFrame extends JFrame {
 	}
 	private class BtnRefreshActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent arg0) {
-			model.update();
-			List<Player> players = Service.getInstance().getPlayers();
-			lblPlayers.setText("Players: " + players.size());
-			int count = 0;
-			for(Player p : players) {
-				if(p.getAdp() > -1) {
-					count++;
-				}
-			}
-			lblWithAdp.setText(" with ADP:  " + count);
-			count = 0;
-			for(Player p : players) {
-				if(p.getProjection() > -1) {
-					count++;
-				}
-			}
-			lblWithProjection.setText(" with Proj: " + count);
+			update();
 		}
 	}
 	private class ComboBoxActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent arg0) {
-			model.update();
+			update();
 		}
+	}
+	private class BtnLockRoundsActionListener implements ActionListener {
+		public void actionPerformed(ActionEvent arg0) {
+			for(int i = 0; i < model.getRowCount(); i++) {
+				int round = 1 + i / FantasyLeague.getInstance().getTeams();
+				model.setValueAt(round, table.getRowSorter().convertRowIndexToModel(i), 7);
+			}
+			update();
+		}
+	}
+	private void update() {
+		model.update();
+		List<Player> players = Service.getInstance().getPlayers();
+		lblPlayers.setText("Players: " + players.size());
+		int count = 0;
+		for(Player p : players) {
+			if(p.getAdp() > -1) {
+				count++;
+			}
+		}
+		lblWithAdp.setText(" with ADP:  " + count);
+		count = 0;
+		for(Player p : players) {
+			if(p.getProjection() > -1) {
+				count++;
+			}
+		}
+		lblWithProjection.setText(" with Proj: " + count);
 	}
 }

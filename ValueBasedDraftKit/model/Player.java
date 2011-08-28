@@ -7,6 +7,7 @@ public class Player {
 	private Position position;
 	private NflTeam team;
 	private double adp;
+	private int projRound;
 	
 	public Player(String name, double projection, Position position, NflTeam team, double adp) {
 		this(name, position, team);
@@ -21,6 +22,7 @@ public class Player {
 		this.setProjection(-1);
 		this.setAdp(-1);
 		this.setTaken(false);
+		this.setProjRound(0);
 	}
 
 	public void setName(String name) {
@@ -94,5 +96,13 @@ public class Player {
 	
 	public void setTaken(boolean taken) {
 		this.taken = taken;
+	}
+
+	public int getProjRound() {
+		return projRound;
+	}
+	
+	public void setProjRound(int round) {
+		this.projRound = round;
 	}
 }
