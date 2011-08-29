@@ -27,6 +27,16 @@ import java.awt.print.PrinterException;
 import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.JTable;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JToolBar;
+import java.awt.Component;
+import javax.swing.Box;
+import javax.swing.JTextField;
+import java.awt.Dimension;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class MainFrame extends JFrame {
 
@@ -38,10 +48,22 @@ public class MainFrame extends JFrame {
 	private JTable table;
 	private FantasyModel model;
 	private JComboBox filterPosComboBox;
+	private JLabel lblSearch;
+	private JMenuBar menuBar;
+	private JMenu mnTable;
+	private JMenuItem mntmPrint;
+	private JMenuItem mntmLockRounds;
+	private JMenu mnInput;
+	private JMenuItem mntmProjections;
+	private JMenuItem mntmAdp;
 	private JLabel lblFilterTo;
-	private JLabel lblFilterOut;
-	private JButton btnLockRounds;
-	private JButton btnPrint;
+	private JToolBar toolBar;
+	private Component horizontalStrut;
+	private Component horizontalStrut_1;
+	private Component horizontalStrut_2;
+	private Component horizontalStrut_3;
+	private Component horizontalStrut_4;
+	private JTextField txtTxfsearch;
 
 	/**
 	 * Create the frame.
@@ -49,6 +71,82 @@ public class MainFrame extends JFrame {
 	public MainFrame() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 667, 494);
+		
+		menuBar = new JMenuBar();
+		setJMenuBar(menuBar);
+		
+		mnTable = new JMenu("Table");
+		menuBar.add(mnTable);
+		
+		mntmPrint = new JMenuItem("Print");
+		mntmPrint.addActionListener(new MntmPrintActionListener());
+		mnTable.add(mntmPrint);
+		
+		mntmLockRounds = new JMenuItem("Lock rounds");
+		mntmLockRounds.addActionListener(new MntmLockRoundsActionListener());
+		mnTable.add(mntmLockRounds);
+		
+		mnInput = new JMenu("Input");
+		menuBar.add(mnInput);
+		
+		mntmProjections = new JMenuItem("Projections");
+		mntmProjections.addActionListener(new MntmProjectionsActionListener());
+		mnInput.add(mntmProjections);
+		
+		mntmAdp = new JMenuItem("ADP");
+		mntmAdp.addActionListener(new MntmAdpActionListener());
+		mnInput.add(mntmAdp);
+		
+		toolBar = new JToolBar();
+		menuBar.add(toolBar);
+		
+		lblFilterTo = new JLabel("Filter to:");
+		toolBar.add(lblFilterTo);
+		
+		horizontalStrut = Box.createHorizontalStrut(20);
+		toolBar.add(horizontalStrut);
+		
+		filterPosComboBox = new JComboBox();
+		filterPosComboBox.setMaximumSize(new Dimension(200, 20));
+		toolBar.add(filterPosComboBox);
+		filterPosComboBox.addActionListener(new ComboBoxActionListener());
+		
+		String[] values = new String[PosEnum.values().length + 1];
+		values[0] = "All";
+		for(int i = 0; i < PosEnum.values().length; i++) {
+			values[i+1] = PosEnum.values()[i].toString();
+		} 
+		
+		filterPosComboBox.setModel(new DefaultComboBoxModel(values));
+		
+		horizontalStrut_1 = Box.createHorizontalStrut(20);
+		toolBar.add(horizontalStrut_1);
+		
+		lblSearch = new JLabel("Search:");
+		toolBar.add(lblSearch);
+		
+		horizontalStrut_2 = Box.createHorizontalStrut(20);
+		toolBar.add(horizontalStrut_2);
+		
+		txtTxfsearch = new JTextField();
+		txtTxfsearch.addKeyListener(new TxtTxfsearchKeyListener());
+		txtTxfsearch.setPreferredSize(new Dimension(170, 20));
+		txtTxfsearch.setMinimumSize(new Dimension(150, 20));
+		txtTxfsearch.setMaximumSize(new Dimension(200, 20));
+		toolBar.add(txtTxfsearch);
+		txtTxfsearch.setColumns(5);
+		
+		horizontalStrut_3 = Box.createHorizontalStrut(20);
+		toolBar.add(horizontalStrut_3);
+		
+		JButton btnRefresh = new JButton("Refresh");
+		toolBar.add(btnRefresh);
+		
+		horizontalStrut_4 = Box.createHorizontalStrut(20);
+		toolBar.add(horizontalStrut_4);
+		btnRefresh.addActionListener(new BtnRefreshActionListener());
+		
+		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -67,7 +165,13 @@ public class MainFrame extends JFrame {
 				for (int i = entry.getValueCount() - 1; i >= 0; i--) {
 					String entryString = entry.getStringValue(i);
 					if(filterPosComboBox.getSelectedItem().toString().equals("All") || entryString.equals((filterPosComboBox.getSelectedItem().toString()))){
-						include = true;
+						if(txtTxfsearch.getText().length() > 0) {
+							if(entryString.toLowerCase().contains(txtTxfsearch.getText().toLowerCase())) {
+								include = true;
+							}
+						} else {
+							include = true;
+						}
 					}
 				}
 				return include;
@@ -76,50 +180,6 @@ public class MainFrame extends JFrame {
 		JScrollPane scrollPane = new JScrollPane(table);
 		table.setFillsViewportHeight(true);
 		contentPane.add(scrollPane, BorderLayout.CENTER);
-			
-		JPanel panel = new JPanel();
-		contentPane.add(panel, BorderLayout.NORTH);
-		panel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-		
-		JButton btnInputProjections = new JButton("Input - Projections");
-		btnInputProjections.addActionListener(new BtnInputProjectionsActionListener());
-		
-		btnLockRounds = new JButton("Lock rounds");
-		btnLockRounds.addActionListener(new BtnLockRoundsActionListener());
-		
-		btnPrint = new JButton("Print");
-		btnPrint.addActionListener(new BtnPrintActionListener());
-		panel.add(btnPrint);
-		panel.add(btnLockRounds);
-		panel.add(btnInputProjections);
-		
-		JButton btnInputAdp = new JButton("Input - ADP");
-		btnInputAdp.addActionListener(new BtnInputAdpActionListener());
-		panel.add(btnInputAdp);
-		
-		JButton btnRefresh = new JButton("Refresh");
-		btnRefresh.addActionListener(new BtnRefreshActionListener());
-		panel.add(btnRefresh);
-		
-		lblFilterTo = new JLabel("Filter to:");
-		panel.add(lblFilterTo);
-		
-		filterPosComboBox = new JComboBox();
-		filterPosComboBox.addActionListener(new ComboBoxActionListener());
-		String[] values = new String[PosEnum.values().length + 1];
-		values[0] = "All";
-		for(int i = 1; i < PosEnum.values().length; i++) {
-			values[i] = PosEnum.values()[i - 1].toString();
-		}		
-		
-		filterPosComboBox.setModel(new DefaultComboBoxModel(values));
-		panel.add(filterPosComboBox);
-		
-		lblFilterOut = new JLabel("Filter out:");
-		panel.add(lblFilterOut);
-		
-		JComboBox comboBox_1 = new JComboBox();
-		panel.add(comboBox_1);
 		
 		infopanel = new JPanel();
 		contentPane.add(infopanel, BorderLayout.SOUTH);
@@ -133,19 +193,6 @@ public class MainFrame extends JFrame {
 		lblWithProjection = new JLabel("with projection:");
 		infopanel.add(lblWithProjection);
 	}
-
-	private class BtnInputProjectionsActionListener implements ActionListener {
-		public void actionPerformed(ActionEvent arg0) {
-			JFrame inputproj = new InputFeed();
-			inputproj.setVisible(true);
-		}
-	}
-	private class BtnInputAdpActionListener implements ActionListener {
-		public void actionPerformed(ActionEvent arg0) {
-			JFrame adpfeed = new ADPFeed();
-			adpfeed.setVisible(true);
-		}
-	}
 	private class BtnRefreshActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent arg0) {
 			update();
@@ -156,7 +203,16 @@ public class MainFrame extends JFrame {
 			update();
 		}
 	}
-	private class BtnLockRoundsActionListener implements ActionListener {
+	private class MntmPrintActionListener implements ActionListener {
+		public void actionPerformed(ActionEvent arg0) {
+			try {
+				table.print(PrintMode.FIT_WIDTH);
+			} catch (PrinterException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	private class MntmLockRoundsActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent arg0) {
 			for(int i = 0; i < model.getRowCount(); i++) {
 				int round = 1 + i / FantasyLeague.getInstance().getTeams();
@@ -165,13 +221,22 @@ public class MainFrame extends JFrame {
 			update();
 		}
 	}
-	private class BtnPrintActionListener implements ActionListener {
-		public void actionPerformed(ActionEvent arg0) {
-			try {
-				table.print(PrintMode.FIT_WIDTH);
-			} catch (PrinterException e) {
-				e.printStackTrace();
-			}
+	private class MntmProjectionsActionListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			JFrame inputproj = new InputFeed();
+			inputproj.setVisible(true);			
+		}
+	}
+	private class MntmAdpActionListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			JFrame adpfeed = new ADPFeed();
+			adpfeed.setVisible(true);			
+		}
+	}
+	private class TxtTxfsearchKeyListener extends KeyAdapter {
+		@Override
+		public void keyReleased(KeyEvent arg0) {
+			update();
 		}
 	}
 	private void update() {
