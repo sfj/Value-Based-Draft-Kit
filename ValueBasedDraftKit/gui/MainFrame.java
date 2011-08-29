@@ -6,6 +6,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultRowSorter;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JTable.PrintMode;
 import javax.swing.RowFilter;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableModel;
@@ -22,6 +23,7 @@ import model.PosEnum;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.print.PrinterException;
 import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.JTable;
@@ -39,6 +41,7 @@ public class MainFrame extends JFrame {
 	private JLabel lblFilterTo;
 	private JLabel lblFilterOut;
 	private JButton btnLockRounds;
+	private JButton btnPrint;
 
 	/**
 	 * Create the frame.
@@ -83,6 +86,10 @@ public class MainFrame extends JFrame {
 		
 		btnLockRounds = new JButton("Lock rounds");
 		btnLockRounds.addActionListener(new BtnLockRoundsActionListener());
+		
+		btnPrint = new JButton("Print");
+		btnPrint.addActionListener(new BtnPrintActionListener());
+		panel.add(btnPrint);
 		panel.add(btnLockRounds);
 		panel.add(btnInputProjections);
 		
@@ -156,6 +163,15 @@ public class MainFrame extends JFrame {
 				model.setValueAt(round, table.getRowSorter().convertRowIndexToModel(i), 7);
 			}
 			update();
+		}
+	}
+	private class BtnPrintActionListener implements ActionListener {
+		public void actionPerformed(ActionEvent arg0) {
+			try {
+				table.print(PrintMode.FIT_WIDTH);
+			} catch (PrinterException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	private void update() {
