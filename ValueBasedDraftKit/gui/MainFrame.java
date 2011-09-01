@@ -11,7 +11,6 @@ import javax.swing.RowFilter;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableModel;
 import javax.swing.JScrollPane;
-import java.awt.FlowLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 
@@ -155,6 +154,7 @@ public class MainFrame extends JFrame {
 		model = new FantasyModel();
 		table = new JTable(model);
 		table.setAutoCreateRowSorter(true);
+		@SuppressWarnings("unchecked")
 		DefaultRowSorter<TableModel, String> rowsorter = (DefaultRowSorter<TableModel, String>) table.getRowSorter();
 		rowsorter.setRowFilter(new RowFilter<TableModel, String>() {
 
@@ -166,7 +166,7 @@ public class MainFrame extends JFrame {
 					String entryString = entry.getStringValue(i);
 					if(filterPosComboBox.getSelectedItem().toString().equals("All") || entryString.equals((filterPosComboBox.getSelectedItem().toString()))){
 						if(txtTxfsearch.getText().length() > 0) {
-							if(entryString.toLowerCase().contains(txtTxfsearch.getText().toLowerCase())) {
+							if(entryString.toLowerCase().indexOf(txtTxfsearch.getText().toLowerCase()) > -1) {
 								include = true;
 							}
 						} else {
@@ -192,6 +192,8 @@ public class MainFrame extends JFrame {
 		
 		lblWithProjection = new JLabel("with projection:");
 		infopanel.add(lblWithProjection);
+		
+		update();
 	}
 	private class BtnRefreshActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent arg0) {

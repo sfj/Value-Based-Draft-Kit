@@ -14,7 +14,7 @@ public class Runcher {
 		FantasyLeague.getInstance().setTeams(14);
 		HashMap<PosEnum,Integer> noPlayers = new HashMap<PosEnum,Integer>();
 		noPlayers.put(PosEnum.QB, 1);
-		noPlayers.put(PosEnum.RB, 2);
+		noPlayers.put(PosEnum.RB, 3);
 		noPlayers.put(PosEnum.WR, 2);
 		noPlayers.put(PosEnum.TE, 1);
 		noPlayers.put(PosEnum.LB, 1);
